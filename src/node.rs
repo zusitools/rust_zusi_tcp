@@ -13,6 +13,43 @@ pub struct Node {
   pub children: Vec<Node>,
 }
 
+impl Node {
+  /// Returns an attribute with the specified ID path, if present.
+  ///
+  /// Returns the first (with respect to a depth-first search) attribute
+  /// that satisfies the following condition: Its ID is equal to the last
+  /// value of `ids`, its parent node's id is equal to the second-to-last
+  /// value of `ids` etc., and its `n`th parent node is a child of `self`,
+  /// where `n` equals `ids.len() - 1`.
+  ///
+  /// The ID path must contain at least one element.
+  pub fn find_attribute_excl(&self, ids: &[u16]) -> Option<&Attribute> {
+    assert!(ids.len() >= 1);
+    if ids.len() > 1 {
+      for c in self.children.iter().filter(|c| c.id == ids[0]) {
+        let res: Option<&Attribute> = c.find_attribute_excl(&ids[1..]);
+        if res.is_some() { return res; }
+      }
+      None
+    } else {
+      self.attributes.iter().filter(|a| a.id == ids[0]).next()
+    }
+  }
+
+  /// Returns an attribute with ID path `ids[1..]` if it exists and
+  /// the first element of the ID path matches this node's ID.
+  ///
+  /// The ID path must contain at least two elements.
+  pub fn find_attribute(&self, ids: &[u16]) -> Option<&Attribute> {
+    assert!(ids.len() >= 2);
+    if self.id != ids[0] {
+      None
+    } else {
+      self.find_attribute_excl(&ids[1..])
+    }
+  }
+}
+
 pub struct Attribute {
   pub id: u16,
   pub value: Vec<u8>,
