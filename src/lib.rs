@@ -42,6 +42,32 @@ mod tests {
   }
 
   #[test]
+  fn test_find_node_cond() {
+    let a1 = node::Attribute::from_u16(0x0042, 0x0001);
+    let a2 = node::Attribute::from_u16(0x0042, 0x0002);
+
+    let n = node::Node {
+      id: 0x0001,
+      attributes: vec![],
+      children: vec![
+        node::Node {
+          id: 0x0002,
+          attributes: vec![],
+          children: vec![],
+        },
+        node::Node {
+          id: 0x0002,
+          attributes: vec![a1, a2],
+          children: vec![],
+        }
+      ],
+    };
+
+    assert!(n.find_node_cond(&[0x0001, 0x0002], |n: &node::Node| n.attributes.len() > 0).unwrap().attributes.len() > 0);
+    assert!(n.find_node_excl_cond(&[0x0002], |n: &node::Node| n.attributes.len() > 0).unwrap().attributes.len() > 0);
+  }
+
+  #[test]
   fn test_find_attribute() {
     let a1 = node::Attribute::from_u16(0x0042, 0x0001);
     let a2 = node::Attribute::from_u16(0x0042, 0x0002);

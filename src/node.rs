@@ -21,12 +21,13 @@ impl Node {
   /// value of `ids`, its parent node's id is equal to the second-to-last
   /// value of `ids` etc., and its `n`th parent node is a child of `self`,
   /// where `n` equals `ids.len() - 1`.
-  pub fn find_node_excl(&self, ids: &[u16]) -> Option<&Node> {
-    if ids.len() == 0 { Some(&self) }
+  pub fn find_node_excl_cond<F>(&self, ids: &[u16], cond: F) -> Option<&Node>
+  where F: Fn(&Node) -> bool {
+    if ids.len() == 0 { if cond(&self) { Some(&self) } else { None } }
     else {
       for c in self.children.iter().filter(|c| c.id == ids[0]) {
         let res: Option<&Node> =
-          if ids.len() == 1 { Some(c) }
+          if ids.len() == 1 { if cond(&c) { Some(c) } else { None } }
           else { c.find_node_excl(&ids[1..]) };
         if res.is_some() { return res; }
       }
@@ -34,15 +35,38 @@ impl Node {
     }
   }
 
+  /// Returns a node with the specified ID path, if present.
+  ///
+  /// Returns the first (with respect to a depth-first search) node
+  /// for which the function `cond` returns `true` and
+  /// that satisfies the following condition: Its ID is equal to the last
+  /// value of `ids`, its parent node's id is equal to the second-to-last
+  /// value of `ids` etc., and its `n`th parent node is a child of `self`,
+  /// where `n` equals `ids.len() - 1`.
+  pub fn find_node_excl(&self, ids: &[u16]) -> Option<&Node> {
+    self.find_node_excl_cond(ids, |_: &Node| true)
+  }
+
+  /// Returns a node with ID path `ids[1..]` if it exists and
+  /// the first element of the ID path matches this node's ID.
+  /// Additionally, the function `cond` applied to that node must
+  /// return `true`.
+  ///
+  /// The ID path must contain at least one element.
+  pub fn find_node_cond<F>(&self, ids: &[u16], cond: F) -> Option<&Node>
+  where F: Fn(&Node) -> bool {
+    assert!(ids.len() >= 1);
+    if self.id != ids[0] { None }
+    else if ids.len() == 1 { if cond(&self) { Some(&self) } else { None } }
+    else { self.find_node_excl_cond(&ids[1..], cond) }
+  }
+
   /// Returns a node with ID path `ids[1..]` if it exists and
   /// the first element of the ID path matches this node's ID.
   ///
   /// The ID path must contain at least one element.
   pub fn find_node(&self, ids: &[u16]) -> Option<&Node> {
-    assert!(ids.len() >= 1);
-    if self.id != ids[0] { None }
-    else if ids.len() == 1 { Some(&self) }
-    else { self.find_node_excl(&ids[1..]) }
+    self.find_node_cond(ids, |_: &Node| true)
   }
 
   /// Returns an attribute with the specified ID path, if present.
