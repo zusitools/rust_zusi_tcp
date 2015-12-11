@@ -117,6 +117,10 @@ impl Attribute {
     }
   }
 
+  pub fn as_u8(&self) -> byteorder::Result<u8> {
+    Cursor::new(&self.value[..]).read_u8()
+  }
+
   pub fn as_u16(&self) -> byteorder::Result<u16> {
     Cursor::new(&self.value[..]).read_u16::<LE>()
   }
