@@ -17,6 +17,7 @@ impl Node {
   /// Returns a node with the specified ID path, if present.
   ///
   /// Returns the first (with respect to a depth-first search) node
+  /// for which the function `cond` returns `true` and
   /// that satisfies the following condition: Its ID is equal to the last
   /// value of `ids`, its parent node's id is equal to the second-to-last
   /// value of `ids` etc., and its `n`th parent node is a child of `self`,
@@ -38,7 +39,6 @@ impl Node {
   /// Returns a node with the specified ID path, if present.
   ///
   /// Returns the first (with respect to a depth-first search) node
-  /// for which the function `cond` returns `true` and
   /// that satisfies the following condition: Its ID is equal to the last
   /// value of `ids`, its parent node's id is equal to the second-to-last
   /// value of `ids` etc., and its `n`th parent node is a child of `self`,
