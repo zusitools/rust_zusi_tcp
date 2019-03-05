@@ -134,6 +134,33 @@ impl Attribute {
     result
   }
 
+  pub fn from_u32(id: u16, val: u32) -> Attribute {
+    let mut result = Attribute {
+      id: id,
+      value: vec!(),
+    };
+    result.value.write_u32::<LE>(val).ok().expect("Error writing u32 value to attribute.");
+    result
+  }
+
+  pub fn from_i16(id: u16, val: i16) -> Attribute {
+    let mut result = Attribute {
+      id: id,
+      value: vec!(),
+    };
+    result.value.write_i16::<LE>(val).ok().expect("Error writing i16 value to attribute.");
+    result
+  }
+
+  pub fn from_f32(id: u16, val: f32) -> Attribute {
+    let mut result = Attribute {
+      id: id,
+      value: vec!(),
+    };
+    result.value.write_f32::<LE>(val).ok().expect("Error writing f32 value to attribute.");
+    result
+  }
+
   pub fn from_str(id: u16, val: &str) -> Attribute {
     Attribute {
       id: id,
