@@ -176,6 +176,10 @@ impl Attribute {
     Cursor::new(&self.value[..]).read_u16::<LE>()
   }
 
+  pub fn as_i16(&self) -> byteorder::Result<i16> {
+    Cursor::new(&self.value[..]).read_i16::<LE>()
+  }
+
   pub fn as_f32(&self) -> byteorder::Result<f32> {
     Cursor::new(&self.value[..]).read_f32::<LE>()
   }
